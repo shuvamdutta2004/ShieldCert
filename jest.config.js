@@ -1,5 +1,5 @@
 /** @type {import('jest').Config} */
-export default {
+module.exports = {
   preset: "ts-jest/presets/default-esm",
   extensionsToTreatAsEsm: [".ts"],
   testEnvironment: "node",
@@ -14,7 +14,7 @@ export default {
         useESM: true,
         tsconfig: {
           module: "ES2022",
-          moduleResolution: "bundler",
+          moduleResolution: "node",
         },
       },
     ],

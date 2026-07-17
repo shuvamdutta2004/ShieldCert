@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "description": "ShieldCert – Zero-Knowledge Certificate Verification on Midnight Network",
   "private": true,
-  "type": "module",
   "scripts": {
     "compile": "compact compile contracts/shield_cert.compact --output managed",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "test:ts": "npx ts-jest --testPathPattern=tests/",
-    "deploy:preview": "NODE_OPTIONS=\"--max-old-space-size=12288\" npx midnight-js-scripts deploy --network preview",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "deploy:preview": "node --max-old-space-size=12288 node_modules/.bin/midnight-js-scripts deploy --network preview",
     "proof-server": "docker run -p 6300:6300 midnightnetwork/proof-server"
   },
   "engines": {
@@ -20,30 +18,5 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.4.11",
     "typescript": "^5.9.3"
-  },
-  "jest": {
-    "preset": "ts-jest/presets/default-esm",
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/tests/**/*.test.ts"
-    ],
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "useESM": true,
-          "tsconfig": {
-            "module": "ES2022",
-            "moduleResolution": "bundler"
-          }
-        }
-      ]
-    }
   }
 }
