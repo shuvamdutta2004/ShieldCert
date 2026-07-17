@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.js",
+  "sourceRoot": "../../contracts/",
+  "sources": ["shield_cert.compact", "compiler/standard-library.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EA0EA;;;;;;;;;;;;;;;;MAZA,AAAA,qBAOC;;OAAA;MAmBD,AAAA,kBAkBC;;;;;;;;;;;;;;;;;;;;;;OAAA;MAWD,AAAA,gBAgBC;;;;;;;;;;;;;;;;;;;;;;OAAA;MAOD,AAAA,gBAcC;;;;;;;;;;;;;;;;;;;;;;OAAA;;;;;;;;;;;;GA9EA;EAFD;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAjCA;;;;;;;;;yEAAwC;IAGxC;;;;;;;;;yEAAqC;IAGrC;;;;;;;;;yEAAyC;IAGzC;;;;;;;;;yEAAoC;UAyBhC,KAAe;;IAAf;;;;;;;2HAAA,KAAe;;yEAAA;;;;;;;GAClB;EC5ED,AAAA,kBAAA;oEAAA;;;EAAA,AAAA,kBAAA;oEAAA;;;EDuDA,AAAA,qBAAwC;;0DAAxC,kBAAwC;;;;;;;;;;;;;;GAAA;EAGxC,AAAA,kBAA2C;;0DAA3C,eAA2C;;;;;;;;;;;;;;GAAA;EAI3C,AAAA,wBAOC,CAPoC,IAAmB;;;uCAI5C,IAAE;GAGb;EAmBD,AAAA,qBAkBC;kEAfO;;;;;;;;;;;uIAAe;;;;UAKb,UAA+B;UAG/B,UAA2D,2BAAV,UAAQ;IAG/D;;;;;;;2HAA0B,UAAQ;;yEAApB;UAGd,KAAa;IAAb;;;;;;;;;;6FAAA,KAAa;;;;wEAAA;;GAChB;EAWD,AAAA,mBAgBC;UAdS,UAA+B;UAC/B,cAA+D,2BAAV,UAAQ;kEAI/D;;;;;;;;;;;uIAAc;0CAAI,cAAY;;kEAM9B;;;;;;;;;;;uIAAe;;;;;GAGtB;EAOD,AAAA,mBAcC;kEAXO;;;;;;;;;;;uIAAe;;;;UAMb,UAA6B;IACnC;;;;;;;2HAA0B,UAAQ;;yEAApB;UAGd,KAAY;IAAZ;;;;;;;;;;6FAAA,KAAY;;;;wEAAA;;GACf;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAjHD;qCAAA;;;;;;;;;;;0GAAwC;KAAA;IAGxC;qCAAA;;;;;;;;;;;0GAAqC;KAAA;IAGrC;qCAAA;;;;;;;;;;;0GAAyC;KAAA;IAGzC;qCAAA;;;;;;;;;;;0GAAoC;KAAA;;;;;;;;;;;EAYpC,AAAA,qBAOC;;;;UAPoC,IAAmB;;;;;;;;mDAAnB,IAAmB;GAOvD;;;;"
+}
