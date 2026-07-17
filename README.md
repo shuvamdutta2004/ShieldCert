@@ -182,13 +182,23 @@ ShieldCert/
 
 ## Initial Idea
 
-[LEAVE PLACEHOLDER — I will fill this in manually]
+ShieldCert was inspired by the challenge of proving the authenticity of certificates while protecting personal privacy. Today, educational institutions, employers, and organizations often need access to sensitive information such as names, registration numbers, or identification details just to verify a credential. I wanted to explore how Midnight's privacy-preserving technology could solve this problem by allowing users to prove that a certificate is valid without revealing unnecessary personal data. ShieldCert demonstrates how zero-knowledge principles can build a more secure, privacy-first verification system that gives users greater control over their information while maintaining trust and authenticity.
 
 ---
 
 ## Screenshots
 
-[LEAVE PLACEHOLDER — I will add compile output and contract address screenshots]
+
+### Compact Compile Output
+> Running `compact compile contracts/shield_cert.compact managed/` — compiles 3 ZK circuits
+
+![compact compile output](screenshots/compact_compile.png)
+
+### Test Suite (11 Tests Passing)
+> Running `npm test` — all 11 tests pass across circuit logic, state transitions, and privacy guarantees
+
+![npm test output](screenshots/npm_test.png)
+
 
 ---
 
