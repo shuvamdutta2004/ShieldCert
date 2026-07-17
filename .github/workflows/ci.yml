@@ -2,19 +2,46 @@ name: ShieldCert CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, master, develop]
   pull_request:
-    branches: [main]
-
-# CI/CD workflows will be added in Level 3
-# Planned:
-#   - Compile Compact contract
-#   - Run test suite
-#   - Deploy to Preview network on main branch push
+    branches: [main, master]
 
 jobs:
-  placeholder:
+  test:
+    name: Run Test Suite
     runs-on: ubuntu-latest
+
     steps:
-      - name: Placeholder
-        run: echo "CI/CD will be configured in Level 3"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Report results
+        if: always()
+        run: echo "Tests completed — check above for pass/fail details"
+
+  # compile:
+  #   name: Compile Compact Contract (Level 3)
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Compact compiler
+  #       run: |
+  #         curl --proto '=https' --tlsv1.2 -LsSf \
+  #           https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+  #         ~/.local/bin/compact update
+  #     - name: Compile contract
+  #       run: ~/.local/bin/compact compile contracts/shield_cert.compact managed/
+  # (Uncomment in Level 3 CI/CD setup)
