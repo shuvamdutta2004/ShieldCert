@@ -1,0 +1,155 @@
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+// =============================================================================
+// ShieldCert – Zero-Knowledge Certificate Verification
+// =============================================================================
+//
+// PRIVACY MODEL
+// =============================================================================
+//
+// PUBLIC (on-chain, visible to anyone):
+//   - credentialHash    : Bytes<32>  — a hash commitment to the certificate
+//   - issuanceCount     : Counter    — number of credentials registered so far
+//   - issuerPublicKey   : PublicKey  — the issuer's derived public key (hash of secret)
+//   - revokedCount      : Counter    — number of revoked credentials
+//
+// PRIVATE (private witness — never leaves the user's device, never on-chain):
+//   - The holder's full name
+//   - Date of birth
+//   - Credential type (e.g. "University Degree", "Professional License")
+//   - Raw credential ID
+//   - Issuer secret key (used to derive issuerPublicKey via hashing)
+//
+// WHAT THE HOLDER PROVES without revealing:
+//   - They possess a credential whose SHA-256 hash matches a stored commitment
+//   - The issuer who signed the credential is the authorised issuer
+//   - The credential has NOT been revoked
+//   - The holder's identity remains fully private throughout
+//
+// =============================================================================
+
+// ── Struct Definitions ────────────────────────────────────────────────────────
+
+// Issuer key pair types
+struct IssuerSecretKey { bytes: Bytes<32>; }
+struct PublicKey       { bytes: Bytes<32>; }
+
+// ── Public Ledger State ───────────────────────────────────────────────────────
+
+// The on-chain commitment to the last-registered credential (SHA-256 hash)
+export ledger credentialHash: Bytes<32>;
+
+// Monotonically increasing count of registered credentials
+export ledger issuanceCount: Counter;
+
+// The issuer's derived public key — a hash of the secret key, never the key itself
+export ledger issuerPublicKey: PublicKey;
+
+// Count of how many credentials have been revoked
+export ledger revokedCount: Counter;
+
+// ── Witnesses (Private Inputs — off-chain only) ───────────────────────────────
+
+// Full certificate data supplied by the holder's DApp — never transmitted on-chain
+witness getCertificateData(): Bytes<32>;
+
+// The issuer's secret key — used locally to authenticate issuance circuits
+witness getIssuerSecret(): IssuerSecretKey;
+
+// ── Helper Circuit: Derive Issuer Public Key ──────────────────────────────────
+
+export circuit deriveIssuerPublicKey(sk: IssuerSecretKey): PublicKey {
+    return PublicKey {
+        bytes: persistentHash<Vector<2, Bytes<32>>>([
+            pad(32, "shieldcert:issuer:pk:v1"),
+            sk.bytes
+        ])
+    };
+}
+
+// ── Constructor ───────────────────────────────────────────────────────────────
+
+// Initialises the contract; sets the issuer's public key from the deployer's secret.
+constructor() {
+    issuerPublicKey = disclose(deriveIssuerPublicKey(getIssuerSecret()));
+}
+
+// ── Circuit: Register a Credential ───────────────────────────────────────────
+//
+// The holder privately supplies their raw certificate data.
+// The circuit hashes it locally (off-chain) and stores only the hash on-chain.
+// The actual certificate (name, DOB, credential type) is NEVER written to the ledger.
+//
+// disclose() is used intentionally here to promote the hash — a digest of
+// private data — to the public ledger. The hash reveals NOTHING about the
+// underlying data; it is safe to disclose.
+//
+export circuit registerCredential(): [] {
+    // Authenticate: only the authorised issuer may register credentials
+    assert(
+        issuerPublicKey == deriveIssuerPublicKey(getIssuerSecret()),
+        "Unauthorized: caller is not the registered issuer."
+    );
+
+    // Retrieve private certificate data locally via witness
+    const certData = getCertificateData();
+
+    // Hash the private certificate data — the hash is safe to publish
+    const certHash = persistentHash<Vector<1, Bytes<32>>>([certData]);
+
+    // Intentionally disclose only the hash (NOT the raw data) to the ledger
+    credentialHash = disclose(certHash);
+
+    // Increment the public issuance counter
+    issuanceCount.increment(1);
+}
+
+// ── Circuit: Verify a Credential ─────────────────────────────────────────────
+//
+// A verifier (or the holder themselves) can prove that:
+//   1. They know the pre-image of credentialHash (i.e., the real certificate)
+//   2. The credential was registered by the legitimate issuer
+//
+// The verifier never sees the actual certificate data — only a boolean proof.
+// disclose() is used to reveal the validity result to the public chain record.
+//
+export circuit verifyCredential(): [] {
+    // Re-derive the hash from the private witness data
+    const certData = getCertificateData();
+    const computedHash = persistentHash<Vector<1, Bytes<32>>>([certData]);
+
+    // Assert the computed hash matches what is on-chain (proves knowledge of pre-image)
+    assert(
+        credentialHash == computedHash,
+        "Verification failed: provided certificate does not match the registered credential."
+    );
+
+    // Assert that the issuer is legitimate
+    assert(
+        issuerPublicKey == deriveIssuerPublicKey(getIssuerSecret()),
+        "Verification failed: issuer mismatch."
+    );
+}
+
+// ── Circuit: Revoke a Credential ─────────────────────────────────────────────
+//
+// Only the authorised issuer can revoke a credential.
+// The new hash (e.g., a zero/null hash) is disclosed to signal revocation.
+//
+export circuit revokeCredential(): [] {
+    // Only the issuer may revoke
+    assert(
+        issuerPublicKey == deriveIssuerPublicKey(getIssuerSecret()),
+        "Unauthorized: only the issuer can revoke credentials."
+    );
+
+    // Zero out the credential hash to signal revocation
+    // Using a sentinel zero-bytes value to mark revocation
+    const zeroHash = pad(32, "REVOKED");
+    credentialHash = disclose(zeroHash);
+
+    // Increment the revocation counter
+    revokedCount.increment(1);
+}

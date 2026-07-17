@@ -1,0 +1,20 @@
+name: ShieldCert CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+# CI/CD workflows will be added in Level 3
+# Planned:
+#   - Compile Compact contract
+#   - Run test suite
+#   - Deploy to Preview network on main branch push
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "CI/CD will be configured in Level 3"

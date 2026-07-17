@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.env
+.env.local
+
+# Compact compiler output (committed intentionally to show it works)
+# managed/   ← uncomment this line if you want to ignore managed/
+
+# npm logs
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Test coverage
+coverage/
