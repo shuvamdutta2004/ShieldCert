@@ -52,8 +52,8 @@ The **verifier** (e.g. a recruiter, border control, exam board) learns **only** 
 | Tool | Version | Purpose |
 |------|---------|---------|
 | **Midnight Network** | Preview / Preprod | Privacy-first blockchain |
-| **Compact** | >= 0.23 | ZK smart contract language |
-| **Node.js** | v22+ (v24 used) | Runtime |
+| **Compact** | 0.5.1 (compiler 0.31.1) | ZK smart contract language |
+| **Node.js** | v22+ (v24.14.1 used) | Runtime |
 | **Docker** | 29.x | Runs the local proof server |
 | **TypeScript** | ^5.5 | Tests and off-chain DApp logic |
 | **Jest + ts-jest** | ^29 | Test runner |
@@ -123,7 +123,7 @@ Expected output: the `managed/` directory containing:
 npm test
 ```
 
-The test suite (`tests/shield_cert.test.ts`) includes **9 tests** across 3 categories:
+The test suite (`tests/shield_cert.test.ts`) includes **11 tests** across 3 categories:
 
 | Category | Tests |
 |----------|-------|
