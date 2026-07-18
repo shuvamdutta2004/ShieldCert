@@ -1,6 +1,10 @@
 # ShieldCert
-
 > Verify credentials without revealing personal information — a Zero-Knowledge Certificate Verification contract on Midnight Network.
+
+---
+
+## Live Demo
+👉 **[PASTE LIVE URL AFTER DEPLOYING FRONTEND]**
 
 ---
 
@@ -8,8 +12,9 @@
 
 | Network | Address                                      |
 |---------|----------------------------------------------|
-| Preview | `[PASTE ADDRESS AFTER DEPLOY]`               |
 | Preprod | `[PASTE ADDRESS AFTER DEPLOY]`               |
+
+> *Note: Preprod contract deployment address is mandatory.*
 
 ---
 
@@ -17,11 +22,10 @@
 
 ShieldCert allows an issuer (university, employer, government body, etc.) to register certificate credentials on the Midnight blockchain **without ever exposing personal data**.
 
-When a holder wants to prove they have a valid credential (e.g. a degree, a professional licence, or a background check), they generate a zero-knowledge proof that:
-
-1. They know the pre-image of a credential hash stored on-chain
-2. The credential was issued by the legitimate, registered issuer
-3. The credential has not been revoked
+When a holder wants to prove they have a valid credential (e.g. a degree, a professional licence, or a background check), they connect their Lace Wallet and generate a zero-knowledge proof locally in their browser. This proof demonstrates that:
+1. They know the pre-image of a credential hash stored on-chain.
+2. The credential was issued by the legitimate, registered issuer.
+3. The credential has not been revoked.
 
 The **verifier** (e.g. a recruiter, border control, exam board) learns **only** whether the proof passed — they never see the holder's name, date of birth, credential type, or any other personal information.
 
@@ -39,7 +43,6 @@ The **verifier** (e.g. a recruiter, border control, exam board) learns **only** 
 | **PRIVATE** (witness — never on-chain) | Issuer's secret key (used to derive the public key locally) |
 
 ### What the holder PROVES without revealing:
-
 - ✅ "I possess a certificate whose hash matches the on-chain commitment"
 - ✅ "That certificate was issued by the legitimate issuer"
 - ✅ "My personal details (name, DOB, credential type) remain completely private"
@@ -47,104 +50,71 @@ The **verifier** (e.g. a recruiter, border control, exam board) learns **only** 
 
 ---
 
+## Privacy Claim
+
+> [!IMPORTANT]
+> **What an observer sees:** An on-chain observer (or a validator reading the ledger) only sees the `credentialHash`, public counters, and the cryptographic ZK proof.  
+> **What an observer CANNOT see:** An observer cannot see the holder's name, certificate type, dates, or the private issuer secret key. The zero-knowledge proof boundary separates the local private state calculation from the verified public transition.
+
+---
+
 ## Tech Stack
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Midnight Network** | Preview / Preprod | Privacy-first blockchain |
-| **Compact** | 0.5.1 (compiler 0.31.1) | ZK smart contract language |
-| **Node.js** | v22+ (v24.14.1 used) | Runtime |
-| **Docker** | 29.x | Runs the local proof server |
-| **TypeScript** | ^5.5 | Tests and off-chain DApp logic |
-| **Jest + ts-jest** | ^29 | Test runner |
+- **Blockchain:** Midnight Network (Preprod testnet)
+- **Smart Contract:** Compact v0.5.1 (compiler 0.31.1)
+- **Frontend SDK:** Midnight.js SDK & DApp Connector API v4.0.1
+- **UI Framework:** React & Vite
+- **Wallet Connector:** Lace Wallet
+- **Styling:** Premium Custom Dark-Mode CSS
 
 ---
 
 ## Prerequisites
 
 Before running this project locally, ensure you have:
-
-1. **Node.js v22+** — check with `node --version`
+1. **Node.js v22+**
 2. **Docker Desktop** — running and accessible (check with `docker ps`)
 3. **Compact compiler** — installed via the shell installer:
    ```bash
-   # On Linux/macOS or WSL2 (required on Windows):
    curl --proto '=https' --tlsv1.2 -LsSf \
      https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
    compact update
-   compact --version
    ```
-4. **Lace Wallet** — browser extension for Midnight (for deploy/interact)
-5. **Preview test tokens** — from the [Midnight Preview Faucet](https://midnight.network)
-
-> **Windows users**: The Compact compiler requires WSL2 (Ubuntu). Run all `compact` and `docker` commands inside your WSL2 terminal.
+4. **Lace Wallet Extension** — Chrome browser extension configured for Midnight Preprod
+5. **Preprod test tokens** — from the [Midnight Preprod Faucet](https://faucet.preprod.midnight.network/)
 
 ---
 
-## Setup
+## Run Locally
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/ShieldCert.git
+git clone https://github.com/shuvamdutta2004/ShieldCert.git
 cd ShieldCert
 
 # 2. Install dependencies
-npm install
+npm install --legacy-peer-deps
 
 # 3. Start the proof server (Docker must be running)
-docker pull midnightnetwork/proof-server
-docker run -p 6300:6300 midnightnetwork/proof-server &
+docker run -p 6300:6300 midnightnetwork/proof-server
 
-# 4. Compile the contract
-compact compile contracts/shield_cert.compact --output managed
+# 4. Compile the smart contract
+compact compile contracts/shield_cert.compact managed/
 
-# Verify the managed/ directory was created:
-ls managed/
-```
-
----
-
-## Compile the Contract
-
-```bash
-compact compile contracts/shield_cert.compact --output managed
-```
-
-Expected output: the `managed/` directory containing:
-- Circuit files (`.zk`)
-- Proving/verification keys
-- TypeScript bindings
-
----
-
-## Run Tests
-
-```bash
+# 5. Run tests locally
 npm test
+
+# 6. Start the React development frontend
+npm run dev
 ```
 
-The test suite (`tests/shield_cert.test.ts`) includes **11 tests** across 3 categories:
-
-| Category | Tests |
-|----------|-------|
-| **Circuit Logic** | Hash correctness, successful verification, wrong-data failure |
-| **State Transitions** | issuanceCount increments, revokedCount increments, REVOKED sentinel |
-| **Privacy Guarantees** | Raw data not on-chain, secret key not exposed, unauthorized rejection |
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## Deploy to Preview Network
+## Demo Video
 
-```bash
-# Deploy (requires proof server running + funded Lace wallet)
-NODE_OPTIONS="--max-old-space-size=12288" npm run deploy:preview
-
-# When the wallet address prints, fund it at:
-# https://midnight.network (Preview Faucet)
-# Then confirm in terminal to continue deployment.
-```
-
-After deployment, copy the contract address printed to terminal and paste it in the [Contract Address](#contract-address) table above.
+[PLACEHOLDER — I will add the link after recording]
 
 ---
 
@@ -153,41 +123,31 @@ After deployment, copy the contract address printed to terminal and paste it in 
 ```
 ShieldCert/
 ├── contracts/
-│   └── shield_cert.compact     ← ZK certificate verification contract
-├── managed/                    ← Auto-generated by `compact compile`
-│   ├── *.zk                    ← Compiled circuit files
-│   └── *.ts                    ← TypeScript bindings
-├── src/                        ← Frontend DApp (added in Level 2)
+│   └── shield_cert.compact     ← ZK contract logic
+├── managed/                    ← Auto-generated compiler ZK keys and types
+├── src/
+│   ├── components/
+│   │   ├── WalletConnect.tsx   ← Wallet connect/disconnect component
+│   │   └── CircuitCall.tsx     ← Register/Verify ZK circuits caller
+│   ├── hooks/
+│   │   └── useMidnight.ts      ← Custom Midnight setup hook
+│   ├── types/
+│   │   └── midnight.d.ts       ← Global window and wallet declarations
+│   ├── App.tsx                 ← UI application shell
+│   ├── main.tsx                ← Entrypoint
+│   └── index.css               ← Core design system styling
 ├── tests/
-│   └── shield_cert.test.ts     ← Test suite (9 tests)
-├── .github/
-│   └── workflows/              ← CI/CD (added in Level 3)
-├── tsconfig.json
+│   └── shield_cert.test.ts     ← Test suite
+├── screenshots/                ← Screenshots for proof of work
 ├── package.json
+├── vite.config.ts              ← Vite build setup with WASM support
+├── vercel.json                 ← Deployment config
 └── README.md
 ```
 
 ---
 
-## Circuits Reference
-
-| Circuit | Visibility | Description |
-|---------|-----------|-------------|
-| `registerCredential()` | Issuer only | Hashes cert data, stores hash on-chain |
-| `verifyCredential()` | Anyone | Proves knowledge of cert pre-image |
-| `revokeCredential()` | Issuer only | Sets hash to REVOKED sentinel |
-| `deriveIssuerPublicKey(sk)` | Internal | Derives public key from secret |
-
----
-
-## Initial Idea
-
-ShieldCert was inspired by the challenge of proving the authenticity of certificates while protecting personal privacy. Today, educational institutions, employers, and organizations often need access to sensitive information such as names, registration numbers, or identification details just to verify a credential. I wanted to explore how Midnight's privacy-preserving technology could solve this problem by allowing users to prove that a certificate is valid without revealing unnecessary personal data. ShieldCert demonstrates how zero-knowledge principles can build a more secure, privacy-first verification system that gives users greater control over their information while maintaining trust and authenticity.
-
----
-
 ## Screenshots
-
 
 ### Compact Compile Output
 > Running `compact compile contracts/shield_cert.compact managed/` — compiles 3 ZK circuits
@@ -199,7 +159,6 @@ ShieldCert was inspired by the challenge of proving the authenticity of certific
 
 ![npm test output](screenshots/npm_test.png)
 
-
 ---
 
 ## License
@@ -208,4 +167,4 @@ MIT
 
 ---
 
-> Built for the **Midnight Builder Challenge — Level 1** on [Rise In](https://risein.com)
+> Built for the **Midnight Builder Challenge — Level 2** on [Rise In](https://risein.com)
